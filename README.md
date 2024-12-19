@@ -47,8 +47,7 @@ You can generate the CA Certificate and the private key using the `ssl_cert_key_
 Run the file using python.
 
 ```shell
-    python3 ssl_server.py
-test1.py
+    python3 ssl_cert_key_gen.py
 ```
 It will ask you some questions to generate the certificate. After answering all the questions your certificate and keys will be generated!
 
