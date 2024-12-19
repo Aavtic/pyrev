@@ -70,12 +70,12 @@ class Client:
 
         while msg := conn.recv(64):
             try:
-                msg_d = msg.decode()
+                msg_d = msg.decode('utf-8')
                 msg_d = msg_d.split("\0")[0]
                 msg_d = buff + msg_d
                 json_msg = json.loads(msg_d)
             except:
-                msg_d = msg.decode()
+                msg_d = msg.decode('utf-8')
                 buff += msg_d
                 continue
 
@@ -96,7 +96,7 @@ class Client:
 
         for buff in buffers:
             buff_str = ''.join(buff)
-            conn.send(buff_str.encode())
+            conn.send(buff_str.encode('utf-8'))
 
     def session(self, ss):
         thread = threading.Thread(target=self.active_receiver, args=(ss,))
