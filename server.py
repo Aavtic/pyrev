@@ -101,7 +101,6 @@ class Server:
                 writer.stdin.write(message)
             buff = ""
 
-
         self.close_all_connections()
         print("connection closed")
 
