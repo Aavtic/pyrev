@@ -7,6 +7,7 @@ import sys
 import platform
 import subprocess
 from math import ceil
+from datetime import datetime
 
 
 parser = argparse.ArgumentParser(description="Reverse Shell Server")
@@ -55,9 +56,12 @@ class Server:
         self.welcome_message = "\nHello There!\nOptions:\n1. Access Shell\n2. Chat\n"
         self.std_msg = {
                 "data": "",
+                "time": "",
         }
         self.linux_shell = "/bin/sh"
         self.windows_shell = "cmd.exe"
+        self.time_color = "\033[92;49m"
+        self.reset_color = "\033[0m"
 
         context = self.create_context(cert_file, key_file)
         self.serve(context)
@@ -81,24 +85,31 @@ class Server:
                 buff += msg_d
                 continue
 
+            if once:
+                return json_msg
             message = json_msg["data"]
+            time = json_msg["time"]
             if not writer:
                 if message != "\n":
+                    if time:
+                        message = self.time_color + time + self.reset_color + " :" + message
                     sys.stdout.write(message)
                     sys.stdout.flush()
             else:
                 writer.stdin.write(message)
             buff = ""
 
-            if once:
-                return message
 
         self.close_all_connections()
         print("connection closed")
 
-    def send_msg(self, conn, msg):
+    def send_msg(self, conn, msg, include_time=True):
         whole_msg = self.std_msg.copy()
         whole_msg["data"] = msg
+        if include_time:
+            current_time = datetime.now()
+            ctime = datetime.strftime(current_time, "%H:%M:%S")
+            whole_msg["time"] = ctime
         json_msg = json.dumps(whole_msg)
         buffers = self.bufferRW.to_buffers(json_msg)
 
@@ -183,8 +194,8 @@ class Server:
                 print("Connection received from", addr[0])
 
                 while True:
-                    self.send_msg(self.conn, self.welcome_message)
-                    msg = self.active_receiver(self.conn, once=True)
+                    self.send_msg(self.conn, self.welcome_message, include_time=False)
+                    msg = self.active_receiver(self.conn, once=True)["data"]
                     try:
                         choice = int(msg)
                     except:

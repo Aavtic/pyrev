@@ -5,6 +5,7 @@ import sys
 import json
 import threading
 from math import ceil
+from datetime import datetime
 
 parser = argparse.ArgumentParser(description="Reverse Shell Client")
 parser.add_argument("--ip", required=True,
@@ -47,8 +48,11 @@ class Client:
 
         self.bufferRW = Buffer(64)
         self.std_msg = {
-                "data": ""
+                "data": "",
+                "time": "",
         }
+        self.time_color = "\033[92;49m"
+        self.reset_color = "\033[0m"
 
         context = ssl.create_default_context(ssl.Purpose.SERVER_AUTH)
         context.load_verify_locations(cafile=cert_file)
@@ -80,7 +84,10 @@ class Client:
                 continue
 
             message = json_msg["data"]
+            time = json_msg["time"]
             if message != "\n":
+                if time:
+                    message = self.time_color + time + self.reset_color + " :" + message
                 sys.stdout.write(message)
                 sys.stdout.flush()
             buff = ""
@@ -90,7 +97,10 @@ class Client:
 
     def send_msg(self, conn, msg):
         whole_msg = self.std_msg.copy()
+        current_time = datetime.now()
+        ctime = datetime.strftime(current_time, "%H:%M:%S")
         whole_msg["data"] = msg
+        whole_msg["time"] = ctime
         json_msg = json.dumps(whole_msg)
         buffers = self.bufferRW.to_buffers(json_msg)
 
