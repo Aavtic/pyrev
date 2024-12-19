@@ -16,6 +16,7 @@ parser.add_argument("--cafile", required=False, default="./cert.pem",
                     help="The Certificate file of the server.\
                             If not specified ./cert.pem will be used\
                             assuming it exists.")
+parser.add_argument("--nocolors", action=argparse.BooleanOptionalAction)
 
 class Buffer:
     def __init__(self, buff_size: int):
@@ -44,8 +45,9 @@ class Buffer:
 
 
 class Client:
-    def __init__(self, ip: str, port: int, cert_file: str):
+    def __init__(self, ip: str, port: int, cert_file: str, colorable: None | bool):
 
+        self.colorable = colorable
         self.bufferRW = Buffer(64)
         self.std_msg = {
                 "data": "",
@@ -87,7 +89,7 @@ class Client:
             time = json_msg["time"]
             if message != "\n":
                 if time:
-                    message = self.time_color + time + self.reset_color + " :" + message
+                    message = (self.time_color if not self.colorable else "") + time + (self.reset_color if not self.colorable else "") + " :" + message
                 sys.stdout.write(message)
                 sys.stdout.flush()
             buff = ""
@@ -133,5 +135,6 @@ if __name__ == "__main__":
     ip = args.ip
     port = int(args.port)
     cafile = args.cafile
+    colorable = args.nocolors
 
-    Client(ip, port, cafile)
+    Client(ip, port, cafile, colorable)

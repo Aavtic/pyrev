@@ -20,6 +20,8 @@ parser.add_argument("--cafile", required=False, default="./cert.pem",
                             If not given ./cert.pem will be used as default assuming it exists")
 parser.add_argument("--private-key", required=False, default="./private.key", help="The Private Key for the server. If not mentioned ./private.key file will be used assuming it exists.")
 
+parser.add_argument("--nocolors", action=argparse.BooleanOptionalAction)
+
 
 class Buffer:
     def __init__(self, buff_size: int):
@@ -48,10 +50,10 @@ class Buffer:
 
 
 class Server:
-    def __init__(self, ip: str, port: int, cert_file: str, key_file: str):
-
+    def __init__(self, ip: str, port: int, cert_file: str, key_file: str, colorable: None | bool):
         self.ip = ip
         self.port = port
+        self.colorable = colorable
         self.bufferRW = Buffer(64)
         self.welcome_message = "\nHello There!\nOptions:\n1. Access Shell\n2. Chat\n"
         self.std_msg = {
@@ -92,7 +94,7 @@ class Server:
             if not writer:
                 if message != "\n":
                     if time:
-                        message = self.time_color + time + self.reset_color + " :" + message
+                        message = (self.time_color if not self.colorable else "") + time + (self.reset_color if not self.colorable else "") + " :" + message
                     sys.stdout.write(message)
                     sys.stdout.flush()
             else:
@@ -217,5 +219,6 @@ if __name__ == "__main__":
     port = int(args.port)
     cafile = args.cafile
     private_key = args.private_key
+    colorable = args.nocolors
 
-    Server(ip, port, cafile, private_key)
+    Server(ip, port, cafile, private_key, colorable)
