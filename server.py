@@ -13,7 +13,7 @@ parser = argparse.ArgumentParser(description="Reverse Shell Server")
 parser.add_argument("--ip", required=False, default="0.0.0.0",
                     help="IP address to host the reverse shell server. If not specified will use address 0.0.0.0.")
 parser.add_argument("--port", required=False, default=8081,
-                    help="PORT to listen on.")
+                    help="PORT to listen on. If not specified port 8081 will be used.")
 parser.add_argument("--cafile", required=False, default="./cert.pem",
                     help="The CA Certificate file for the server Caution:\
                             If not given ./cert.pem will be used as default assuming it exists")
