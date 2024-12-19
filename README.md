@@ -1,6 +1,13 @@
 # Python Cross platform Reverse shell server and client with TLS/SSL security. 
 
 
+## Install Requirements
+
+To install all the necessary requirements. Run the following command.
+``` shell
+    python -m pip install -r requirements.txt
+```
+
 
 ## Setup
 
