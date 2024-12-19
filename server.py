@@ -98,7 +98,10 @@ class Server:
                     sys.stdout.write(message)
                     sys.stdout.flush()
             else:
-                writer.stdin.write(message)
+                try:
+                    writer.stdin.write(message)
+                except:
+                    return
             buff = ""
 
         self.close_all_connections()
@@ -142,7 +145,7 @@ class Server:
             if output == "" and (process.poll() is not None):
                 return
             else:
-                self.send_msg(conn, output)
+                self.send_msg(conn, output, include_time=False)
 
     def shell(self, conn):
         system = platform.system()
